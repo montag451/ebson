@@ -1,7 +1,7 @@
-bson
+ebson
 =====
 
-An OTP library
+A library to encode/decode BSON documents
 
 Build
 -----
