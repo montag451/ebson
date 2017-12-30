@@ -67,15 +67,14 @@ decode_cstring(Bin) ->
     decode_cstring(Bin, <<>>).
 
 -spec decode_cstring(Bin :: binary(), binary()) -> {binary(), binary()}.
-decode_cstring(<<0, Rest/binary>>, Name) ->
-    {Name, Rest};
-decode_cstring(<<B, Rest/binary>>, Name) ->
-    decode_cstring(Rest, <<Name/binary, B>>).
+decode_cstring(<<0, Rest/binary>>, CString) ->
+    {CString, Rest};
+decode_cstring(<<C, Rest/binary>>, CString) ->
+    decode_cstring(Rest, <<CString/binary, C>>).
 
 -spec decode_value(Type :: pos_integer(), Bin :: binary()) -> {bson_value(), binary()}.
 % double
-decode_value(1, Bin) ->
-    <<Double/float-little, Rest/binary>> = Bin,
+decode_value(1, <<Double/float-little, Rest/binary>>) ->
     {{double, Double}, Rest};
 % UTF-8 string
 decode_value(2, Bin) ->
@@ -104,8 +103,7 @@ decode_value(5, <<L:32/signed-little, 4, Binary:L/binary, Rest/binary>>) ->
 decode_value(6, Bin) ->
     {undefined, Bin};
 % object id
-decode_value(7, Bin) ->
-    <<ObjId:12/binary, Rest/binary>> = Bin,
+decode_value(7, <<ObjId:12/binary, Rest/binary>>) ->
     {{object_id, ObjId}, Rest};
 % boolean (false)
 decode_value(8, <<0, Rest/binary>>) ->
